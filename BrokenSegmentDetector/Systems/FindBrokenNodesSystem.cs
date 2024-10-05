@@ -33,7 +33,7 @@ namespace BrokenSegmentDetector.Systems
             m_EndFrameBarrier = World.GetOrCreateSystemManaged<EndFrameBarrier>();
             m_BrokenNodesQuery = SystemAPI.QueryBuilder()
                  .WithAll<Game.Net.Node, PrefabRef, Game.Net.ConnectedEdge>()
-                 .WithNone<Game.Simulation.ElectricityNodeConnection, Game.Simulation.WaterPipeNodeConnection, Game.Net.Marker, Game.Tools.EditorContainer, Game.Common.Owner, Game.Net.Waterway, Game.Net.LocalConnect>()
+                 .WithNone<Game.Simulation.ElectricityNodeConnection, Game.Simulation.WaterPipeNodeConnection, Game.Net.Marker, Game.Tools.EditorContainer, Game.Net.Waterway, Game.Net.LocalConnect>()
                  .Build();
             Enabled = false;
         }
@@ -70,6 +70,26 @@ namespace BrokenSegmentDetector.Systems
                     if (m_PrefabSystem.TryGetPrefab(prefabRef.m_Prefab, out PrefabBase prefabBase))
                     {
                         m_Log.Info($"{nameof(FindBrokenNodesSystem)}.{nameof(OnGameLoadingComplete)} Broken Node is a {prefabBase.name}.");
+                    }
+                }
+                else if (EntityManager.TryGetBuffer(entity, isReadOnly: true, out DynamicBuffer<Game.Net.ConnectedEdge> connectedEdges))
+                {
+                    foreach (Game.Net.ConnectedEdge edge in connectedEdges)
+                    {
+                        if (EntityManager.TryGetComponent(edge.m_Edge, out PrefabRef edgePrefabRef)
+                            && m_PrefabSystem.TryGetPrefab(edgePrefabRef.m_Prefab, out PrefabBase edgePrefab)
+                            && edgePrefab is not null
+                            && ((EntityManager.TryGetComponent(edgePrefabRef.m_Prefab, out Game.Prefabs.ElectricityConnectionData edgeElectricityConnectionData)
+                            && EvaluateEelctricityConnectionData(edgeElectricityConnectionData, edge.m_Edge))
+                            || EntityManager.HasComponent<Game.Prefabs.WaterPipeConnectionData>(edgePrefabRef.m_Prefab)))
+                        {
+                            brokenNodes.Add(entity);
+                            m_Log.Info($"{nameof(FindBrokenNodesSystem)}.{nameof(OnGameLoadingComplete)} Found Broken Node {entity.Index}:{entity.Version}.");
+                            if (m_PrefabSystem.TryGetPrefab(prefabRef.m_Prefab, out PrefabBase prefabBase))
+                            {
+                                m_Log.Info($"{nameof(FindBrokenNodesSystem)}.{nameof(OnGameLoadingComplete)} Broken Edge is a {edgePrefab.name}.");
+                            }
+                        }
                     }
                 }
             }
@@ -125,6 +145,11 @@ namespace BrokenSegmentDetector.Systems
                     {
                         return true;
                     }
+                }
+
+                if (EntityManager.TryGetComponent(entity, out Game.Net.Upgraded entityUpgraded) && (entityUpgraded.m_Flags.m_General & CompositionFlags.General.Lighting) == CompositionFlags.General.Lighting)
+                {
+                    return true;
                 }
             }
 
