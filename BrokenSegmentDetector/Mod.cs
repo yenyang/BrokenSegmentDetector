@@ -8,7 +8,7 @@ namespace BrokenSegmentDetector
     using Game;
     using Game.Modding;
     using Game.SceneFlow;
-
+    
     /// <summary>
     /// Mod entry point. Initializes system.
     /// </summary>
