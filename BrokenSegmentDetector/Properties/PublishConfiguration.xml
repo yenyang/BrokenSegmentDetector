@@ -68,7 +68,7 @@ I will respond on the code modding channels on **Cities: Skylines Modding Discor
   <!--Dependency for the mod, can be set multiple times-->
   <Dependency Id="" />
   <!--Change log for new version. Single line or multi line. Supports minimal markdown subset-->
-  <ChangeLog Value=""># Patch V1.0.1
+  <ChangeLog># Patch V1.0.1
 * Added Forum Link</ChangeLog>
   <!--ChangeLog>
 	</ChangeLog-->
