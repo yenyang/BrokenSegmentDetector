@@ -9,6 +9,7 @@ namespace BrokenSegmentDetector.Systems
     using Game;
     using Game.Common;
     using Game.Prefabs;
+    using Game.Simulation;
     using Game.Tools;
     using Unity.Collections;
     using Unity.Entities;
@@ -22,6 +23,9 @@ namespace BrokenSegmentDetector.Systems
         private PrefabSystem m_PrefabSystem;
         private EndFrameBarrier m_EndFrameBarrier;
         private ILog m_Log;
+#if DELETE_NO_CONNECTED_EDGE
+        private EntityQuery m_AllEdgesQuery;
+#endif
 
         /// <inheritdoc/>
         protected override void OnCreate()
@@ -33,8 +37,15 @@ namespace BrokenSegmentDetector.Systems
             m_EndFrameBarrier = World.GetOrCreateSystemManaged<EndFrameBarrier>();
             m_BrokenNodesQuery = SystemAPI.QueryBuilder()
                  .WithAll<Game.Net.Node, PrefabRef, Game.Net.ConnectedEdge>()
-                 .WithNone<Game.Simulation.ElectricityNodeConnection, Game.Simulation.WaterPipeNodeConnection, Game.Net.Marker, Game.Tools.EditorContainer, Game.Net.Waterway, Game.Net.LocalConnect>()
+                 .WithNone<Game.Simulation.ElectricityNodeConnection, Game.Simulation.WaterPipeNodeConnection, Game.Net.Marker, Game.Tools.EditorContainer, Game.Net.Waterway>()
                  .Build();
+
+#if DELETE_NO_CONNECTED_EDGE
+            m_AllEdgesQuery = SystemAPI.QueryBuilder()
+                .WithAll<Game.Net.Edge>()
+                .Build();
+#endif
+
             Enabled = false;
         }
 
@@ -43,15 +54,27 @@ namespace BrokenSegmentDetector.Systems
         {
             base.OnGameLoadingComplete(purpose, mode);
 
-            m_Log.Info($"{nameof(FindBrokenNodesSystem)}.{nameof(OnGameLoadingComplete)} Starting. . .");
+            EntityCommandBuffer buffer = m_EndFrameBarrier.CreateCommandBuffer();
 
+#if DELETE_NO_CONNECTED_EDGE
+            NativeArray<Entity> allSegments = m_AllEdgesQuery.ToEntityArray(Allocator.Temp);
+            foreach (Entity entity1 in allSegments)
+            {
+                if (EntityManager.TryGetComponent(entity1, out Game.Net.Edge edge) && (edge.m_Start == Entity.Null || edge.m_End == Entity.Null))
+                {
+                    buffer.AddComponent<Deleted>(entity1);
+                    m_Log.Info($"{nameof(FindBrokenNodesSystem)}.{nameof(OnGameLoadingComplete)} Deleted edge with no connected edge. Entity {entity1.Index}:{entity1.Version}.");
+                }
+            }
+#endif
+
+            m_Log.Info($"{nameof(FindBrokenNodesSystem)}.{nameof(OnGameLoadingComplete)} Starting. . .");
             if (m_BrokenNodesQuery.IsEmptyIgnoreFilter)
             {
                 m_Log.Info($"{nameof(FindBrokenNodesSystem)}.{nameof(OnGameLoadingComplete)} No potentially Broken Nodes detected.");
                 return;
             }
 
-            EntityCommandBuffer buffer = m_EndFrameBarrier.CreateCommandBuffer();
             NativeArray<Entity> entities = m_BrokenNodesQuery.ToEntityArray(Allocator.Temp);
             NativeList<Entity> brokenNodes = new NativeList<Entity>(0, Allocator.Temp);
 
@@ -72,7 +95,7 @@ namespace BrokenSegmentDetector.Systems
                         m_Log.Info($"{nameof(FindBrokenNodesSystem)}.{nameof(OnGameLoadingComplete)} Broken Node is a {prefabBase.name}.");
                     }
                 }
-                else if (EntityManager.TryGetBuffer(entity, isReadOnly: true, out DynamicBuffer<Game.Net.ConnectedEdge> connectedEdges))
+                else if (EntityManager.TryGetBuffer(entity, isReadOnly: true, out DynamicBuffer<Game.Net.ConnectedEdge> connectedEdges) && !EntityManager.HasComponent<Game.Net.LocalConnect>(entity))
                 {
                     foreach (Game.Net.ConnectedEdge edge in connectedEdges)
                     {
@@ -97,23 +120,24 @@ namespace BrokenSegmentDetector.Systems
             if (brokenNodes.Length == 0)
             {
                 m_Log.Info($"{nameof(FindBrokenNodesSystem)}.{nameof(OnGameLoadingComplete)} No Broken Nodes detected.");
-                return;
             }
-
-            m_Log.Info($"{nameof(FindBrokenNodesSystem)}.{nameof(OnGameLoadingComplete)} Highlighting connected edges of broken nodes:");
-            foreach (Entity entity in brokenNodes)
+            else
             {
-                if (!EntityManager.TryGetBuffer(entity, isReadOnly: true, out DynamicBuffer<Game.Net.ConnectedEdge> connectedEdges))
+                m_Log.Info($"{nameof(FindBrokenNodesSystem)}.{nameof(OnGameLoadingComplete)} Highlighting connected edges of broken nodes:");
+                foreach (Entity entity in brokenNodes)
                 {
-                    continue;
-                }
+                    if (!EntityManager.TryGetBuffer(entity, isReadOnly: true, out DynamicBuffer<Game.Net.ConnectedEdge> connectedEdges))
+                    {
+                        continue;
+                    }
 
-                foreach (Game.Net.ConnectedEdge edge in connectedEdges)
-                {
-                    buffer.AddComponent<Highlighted>(edge.m_Edge);
+                    foreach (Game.Net.ConnectedEdge edge in connectedEdges)
+                    {
+                        buffer.AddComponent<Highlighted>(edge.m_Edge);
 
-                    m_Log.Info($"{nameof(FindBrokenNodesSystem)}.{nameof(OnGameLoadingComplete)} Highlighted {edge.m_Edge}.");
-                    buffer.AddComponent<BatchesUpdated>(edge.m_Edge);
+                        m_Log.Info($"{nameof(FindBrokenNodesSystem)}.{nameof(OnGameLoadingComplete)} Highlighted {edge.m_Edge}.");
+                        buffer.AddComponent<BatchesUpdated>(edge.m_Edge);
+                    }
                 }
             }
 

@@ -1,13 +1,4 @@
-<Publish>
-  <!--Id must be set in order to update existed mod. it is not required for publishing mod for the first time-->
-  <ModId Value="93199" />
-  <!--Name of the mod to display to players-->
-  <DisplayName Value="Broken Segment Detector" />
-  <!--Short description of the mod-->
-  <ShortDescription Value="Might help fix broken saves." />
-  <!--Long description of the mod. Single line or multi line. Supports minimal markdown subset-->
-  <!--LongDescription Value="This is a long description" /-->
-  <LongDescription>Read the description. It is very important.
+Read the description. It is very important.
 
 This is a barebones diagnostic script for saves that are suffering from the ElectricityFlowEdge errors and save file corruption. 
 
@@ -52,27 +43,4 @@ I will respond on the code modding channels on **Cities: Skylines Modding Discor
 * StarQ for providing tech support including: determining how the problem could be resolved, finding broken segments, and fixing people's saves.
 * Chameleon TBN - Logo
 * krzychu124 for developing Scene Explorer which was vital in determining the cause of these problems.
-* Those that provided saves and feedback that helped this mod develop.</LongDescription>
-  <!--Thumbnail-->
-  <Thumbnail Value="Properties/Thumbnail.png" />
-  <!--Screenshot, can be set multiple times-->
-  <Screenshot Value="Properties/Previews/HighlightedSegments.png" />
-  <!--Tag, can be set multiple times-->
-  <Tag Value="Code Mod" />
-  <!--Link to the forum post where the mod can be discussed-->
-  <ForumLink Value="" />
-  <!--Version of the mod-->
-  <ModVersion Value="1.0.0" />
-  <!--Recommended version of the base game to use the mod-->
-  <GameVersion Value="1.1.*" />
-  <!--Dependency for the mod, can be set multiple times-->
-  <Dependency Id="" />
-  <!--Change log for new version. Single line or multi line. Supports minimal markdown subset-->
-  <ChangeLog Value="" />
-  <!--ChangeLog>
-	</ChangeLog-->
-  <!--External link. supported types are discord, github, youtube, twitch, x, paypal, patreon, buymeacoffee, kofi, crowdin, gitlab-->
-  <ExternalLink Type="discord" Url="https://discord.gg/HTav7ARPs2" />
-  <ExternalLink Type="paypal" Url="https://www.paypal.com/paypalme/YenyangsMods" />
-  <ExternalLink Type="github" Url="https://github.com/yenyang/BrokenSegmentDetector" />
-</Publish>
+* Those that provided saves and feedback that helped this mod develop.
