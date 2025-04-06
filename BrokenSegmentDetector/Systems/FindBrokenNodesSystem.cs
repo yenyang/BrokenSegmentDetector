@@ -23,9 +23,7 @@ namespace BrokenSegmentDetector.Systems
         private PrefabSystem m_PrefabSystem;
         private EndFrameBarrier m_EndFrameBarrier;
         private ILog m_Log;
-#if DELETE_NO_CONNECTED_EDGE
         private EntityQuery m_AllEdgesQuery;
-#endif
 
         /// <inheritdoc/>
         protected override void OnCreate()
@@ -40,11 +38,9 @@ namespace BrokenSegmentDetector.Systems
                  .WithNone<Game.Simulation.ElectricityNodeConnection, Game.Simulation.WaterPipeNodeConnection, Game.Net.Marker, Game.Tools.EditorContainer, Game.Net.Waterway>()
                  .Build();
 
-#if DELETE_NO_CONNECTED_EDGE
             m_AllEdgesQuery = SystemAPI.QueryBuilder()
                 .WithAll<Game.Net.Edge>()
                 .Build();
-#endif
 
             Enabled = false;
         }
@@ -56,8 +52,8 @@ namespace BrokenSegmentDetector.Systems
 
             EntityCommandBuffer buffer = m_EndFrameBarrier.CreateCommandBuffer();
 
-#if DELETE_NO_CONNECTED_EDGE
             NativeArray<Entity> allSegments = m_AllEdgesQuery.ToEntityArray(Allocator.Temp);
+            m_Log.Info($"{nameof(FindBrokenNodesSystem)}.{nameof(OnGameLoadingComplete)} Checking for no connected edges.");
             foreach (Entity entity1 in allSegments)
             {
                 if (EntityManager.TryGetComponent(entity1, out Game.Net.Edge edge) && (edge.m_Start == Entity.Null || edge.m_End == Entity.Null))
@@ -66,13 +62,17 @@ namespace BrokenSegmentDetector.Systems
                     m_Log.Info($"{nameof(FindBrokenNodesSystem)}.{nameof(OnGameLoadingComplete)} Deleted edge with no connected edge. Entity {entity1.Index}:{entity1.Version}.");
                 }
             }
-#endif
 
-            m_Log.Info($"{nameof(FindBrokenNodesSystem)}.{nameof(OnGameLoadingComplete)} Starting. . .");
+            m_Log.Info($"{nameof(FindBrokenNodesSystem)}.{nameof(OnGameLoadingComplete)} Finished checking for no connected edges.");
+
             if (m_BrokenNodesQuery.IsEmptyIgnoreFilter)
             {
                 m_Log.Info($"{nameof(FindBrokenNodesSystem)}.{nameof(OnGameLoadingComplete)} No potentially Broken Nodes detected.");
                 return;
+            }
+            else
+            {
+                m_Log.Info($"{nameof(FindBrokenNodesSystem)}.{nameof(OnGameLoadingComplete)} Starting. . .");
             }
 
             NativeArray<Entity> entities = m_BrokenNodesQuery.ToEntityArray(Allocator.Temp);

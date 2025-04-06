@@ -9,7 +9,7 @@
   <!--LongDescription Value="This is a long description" /-->
   <LongDescription>Read the description. It is very important.
 
-This is a barebones diagnostic script for saves that are suffering from the ElectricityFlowEdge errors and save file corruption. 
+This is a barebones diagnostic script for saves that are suffering from the ElectricityFlowEdge and No Connected Edge errors and save file corruption. 
 
 ## Dependencies
 None
@@ -27,6 +27,8 @@ With this mod and while running the game in safe mode from Skyve, load your save
 There are no settings for this mod, yet. There is no UI for this mod, yet.
 
 Please note: networks whose prefab did not load correctly are filtered out as they usually generate false positives otherwise.
+
+This will delete edges (segments) with no connected edge (nodes) on game load which involves looping through all networks in the save.
   
 # Instructions
 
@@ -62,14 +64,14 @@ I will respond on the code modding channels on **Cities: Skylines Modding Discor
   <!--Link to the forum post where the mod can be discussed-->
   <ForumLink Value="https://forum.paradoxplaza.com/forum/threads/broken-segment-detector.1712574/" />
   <!--Version of the mod-->
-  <ModVersion Value="1.0.1" />
+  <ModVersion Value="1.1.0" />
   <!--Recommended version of the base game to use the mod-->
-  <GameVersion Value="1.1.*" />
+  <GameVersion Value="1.2.*" />
   <!--Dependency for the mod, can be set multiple times-->
   <Dependency Id="" />
   <!--Change log for new version. Single line or multi line. Supports minimal markdown subset-->
-  <ChangeLog># Patch V1.0.1
-* Added Forum Link</ChangeLog>
+  <ChangeLog># Update V1.1.0
+* On Load, deletes Edges with no Connected Edge. This loops through all networks in your save on load.</ChangeLog>
   <!--ChangeLog>
 	</ChangeLog-->
   <!--External link. supported types are discord, github, youtube, twitch, x, paypal, patreon, buymeacoffee, kofi, crowdin, gitlab-->

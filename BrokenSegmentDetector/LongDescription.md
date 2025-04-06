@@ -1,6 +1,6 @@
 Read the description. It is very important.
 
-This is a barebones diagnostic script for saves that are suffering from the ElectricityFlowEdge errors and save file corruption. 
+This is a barebones diagnostic script for saves that are suffering from the ElectricityFlowEdge and No Connected Edge errors and save file corruption. 
 
 ## Dependencies
 None
@@ -18,6 +18,8 @@ With this mod and while running the game in safe mode from Skyve, load your save
 There are no settings for this mod, yet. There is no UI for this mod, yet.
 
 Please note: networks whose prefab did not load correctly are filtered out as they usually generate false positives otherwise.
+
+This will delete edges (segments) with no connected edge (nodes) on game load which involves looping through all networks in the save.
   
 # Instructions
 
