@@ -1,2 +1,2 @@
-﻿# Update V1.1.0
-* On Load, deletes Edges with no Connected Edge. This loops through all networks in your save on load.
+﻿# Update V1.1.1
+* Rebuilt for game version v1.3.3f1
