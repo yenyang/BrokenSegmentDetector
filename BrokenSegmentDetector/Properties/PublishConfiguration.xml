@@ -64,14 +64,14 @@ I will respond on the code modding channels on **Cities: Skylines Modding Discor
   <!--Link to the forum post where the mod can be discussed-->
   <ForumLink Value="https://forum.paradoxplaza.com/forum/threads/broken-segment-detector.1712574/" />
   <!--Version of the mod-->
-  <ModVersion Value="1.1.1" />
+  <ModVersion Value="1.1.2" />
   <!--Recommended version of the base game to use the mod-->
   <GameVersion Value="1.3.*" />
   <!--Dependency for the mod, can be set multiple times-->
   <Dependency Id="" />
   <!--Change log for new version. Single line or multi line. Supports minimal markdown subset-->
-  <ChangeLog># Update V1.1.1
-* Rebuilt for game version v1.3.3f1</ChangeLog>
+  <ChangeLog># Patch V1.1.2
+* Rebuilt for game version v1.3.6f1.</ChangeLog>
   <!--ChangeLog>
 	</ChangeLog-->
   <!--External link. supported types are discord, github, youtube, twitch, x, paypal, patreon, buymeacoffee, kofi, crowdin, gitlab-->
