@@ -1,2 +1,2 @@
-﻿# Patch V1.1.2
-* Rebuilt for game version v1.3.6f1.
+﻿# Patch V1.1.5
+* Rebuilt for game version v1.5.7f1.
