@@ -26,6 +26,7 @@ namespace BrokenSegmentDetector
                 log.Info($"Current mod asset at {asset.path}");
             }
 
+            updateSystem.UpdateBefore<RemoveEdgesWithoutNodesSystem, Game.Serialization.ConnectedEdgeSystem>(SystemUpdatePhase.Deserialize);
             updateSystem.UpdateAt<FindBrokenNodesSystem>(SystemUpdatePhase.GameSimulation);
         }
 
